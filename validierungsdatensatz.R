@@ -13,6 +13,18 @@ dat$d<-format(dat$date,"%Y%m%d")
 
 dat$p<-dat$Messwert
 dat$p[dat$Bem!="Niederschlag"]<-NA
+p<-dat$Messwert[dat$Bem=="Niederschlag"]
+
+dat$v5<-dat$Messwert
+dat$v5[dat$Bem!="Vaisala 5cm" | dat$Einheit!= "ppm"]<-NA
+v5<-dat$Messwert[dat$Bem=="Vaisala 5cm" & dat$Einheit== "ppm"]
+
+dat$v25<-dat$Messwert
+dat$v25[dat$Bem!="Vaisala 25cm" | dat$Einheit!= "ppm"]<-NA
+v25<-dat$Messwert[dat$Bem=="Vaisala 25cm" & dat$Einheit== "ppm"]
+
+plot(v5,type="l")
+points(dat$v25,col=2)
 
 sum.na<-function(x){sum(x, na.rm = T)}
 
@@ -22,13 +34,17 @@ p_daily<-tapply(dat$p, dat$d, sum.na)
 hour<-parse_date_time(unique(dat$h),"YmdH")
 day<-parse_date_time(unique(dat$d),"Ymd")
 
-plot(hour,p_hourly,type="h",col=2)
-plot(day,p_daily,type="l")
+plot(hour,p_hourly,type="p",col=2)
+plot(day,p_daily,type="p")
+plot(sort(p_hourly[p_hourly!=0]))
+plot(sort(p_daily[p_daily!=0]))
+hist(p_daily[p_daily>5],20)
+hist(p_hourly[p_hourly>3],20)
+plot(density(p_hourly[p_hourly>5]))
 points(dat$p~dat$date,type="h")
 p<-dat$Messwert[dat$Bem=="Niederschlag"]
 
 plot(p)
 
-t<-60*24#zeit in minuten
-b<-sqrt(5*t-(t/24)^2)#mm regenhöhe starkregen
+
 
